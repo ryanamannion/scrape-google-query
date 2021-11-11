@@ -168,12 +168,13 @@ def main(query_str, filetype, domain, n_docs, save_dir):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("num_docs", type=int, help="Number of docs to download")
-    parser.add_argument("save_dir", type=Path, help="Where to save docs")
-    parser.add_argument("query", type=str, help="Query string")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("num_docs", type=int, help="maximum number of docs to "
+                                                   "download")
+    parser.add_argument("save_dir", type=Path, help="where to save docs")
+    parser.add_argument("query", type=str, help="query string")
     parser.add_argument("--filetype", "-f", type=str, default="pdf",
-                        help="File extension to look for. Do not include"
+                        help="file extension to look for. Do not include"
                              " period. e.g. 'pdf'")
     parser.add_argument("--domain", "-d", type=str, default=".com",
                         help="Google domain to use. Defaults to .com")

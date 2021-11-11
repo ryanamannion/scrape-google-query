@@ -1,7 +1,7 @@
-"""Scrape documents from google search.
+"""Scrape university codes of conduct from google search.
 
 Uses BeautifulSoup to scrape a list of pdf URLs from a google search looking
-for documents of a certain type.
+for university codes of conduct.
 """
 import re
 import argparse
@@ -17,6 +17,10 @@ import concurrent.futures
 from datetime import datetime
 
 BASE_URL = "https://www.google."
+repls = {"%20": "_",
+         "(": "",
+         ")": ""
+          }
 metadata = {}
 
 
@@ -40,7 +44,9 @@ def scrape_page(url, href_target, doc_type):
         try:
             url_match = href_target.search(result_tag.attrs['href']).group()
             doc_url = url_match.replace("%2520", "%20")
-            raw_fname = doc_url.split('/')[-1].replace("%20", "_")
+            raw_fname = doc_url.split('/')[-1]
+            [(raw_fname := raw_fname.replace(orig, repl)) for orig, repl 
+                                                          in repls.items()]
             hostname = urlparse(doc_url).hostname.split('.')[-2]
             save_fname = hostname+'-'+raw_fname
             if save_fname in metadata:
@@ -49,7 +55,10 @@ def scrape_page(url, href_target, doc_type):
                    'hostname': hostname,
                    'raw_fname': raw_fname,
                    'save_fname': save_fname,
-                   'notes': []}
+                   'notes': [],
+                   'reviewed': False,
+                   'query': "",             # filled in later
+                   'download_dt': None}     # filled in later
             docs.append(doc)
         except AttributeError:
             continue
@@ -159,7 +168,7 @@ def main(query_str, filetype, domain, n_docs, save_dir):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser()
     parser.add_argument("num_docs", type=int, help="Number of docs to download")
     parser.add_argument("save_dir", type=Path, help="Where to save docs")
     parser.add_argument("query", type=str, help="Query string")

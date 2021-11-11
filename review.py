@@ -23,7 +23,6 @@ response_table = [
     ]
 
 TERM_SIZE = shutil.get_terminal_size((57, 98))      # for table formatting
-print(TERM_SIZE)
 TRASH_LOCATION = Path.home()/".local/share/Trash/files"       # joinpath idiom
 DEFAULT_APP_OPENER = "xdg-open"
 

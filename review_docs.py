@@ -7,10 +7,13 @@ import subprocess
 from pathlib import Path
 from copy import deepcopy
 
+TRASH_LOCATION = Path.home()/".local/share/Trash/files"       # joinpath idiom
+DEFAULT_APP_OPENER = "xdg-open"
+
 
 def open_file(filepath):
     print(f"Opening: {filepath}")
-    subprocess.run(f"xdg-open {filepath}", shell=True)
+    subprocess.run(f"{DEFAULT_APP_OPENER} {filepath}", shell=True)
 
 
 def load_json(path):
@@ -77,7 +80,7 @@ def main(data_dir):
                 elif relevant is False:
                     print("No")
                     # move to trash
-                    trash_path = Path.home()/".local/share/Trash/files"/file_name
+                    trash_path = TRASH_LOCATION/file_name
                     if file_path.exists():
                         # patch for error which caused files to be deleted but
                         # not from the metadata

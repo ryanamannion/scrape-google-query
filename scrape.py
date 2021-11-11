@@ -159,7 +159,7 @@ def main(query_str, filetype, domain, n_docs, save_dir):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("num_docs", type=int, help="Number of docs to download")
     parser.add_argument("save_dir", type=Path, help="Where to save docs")
     parser.add_argument("query", type=str, help="Query string")

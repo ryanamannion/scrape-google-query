@@ -127,7 +127,7 @@ def main(data_dir):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("data_path", type=Path, help="path to data to review")
     args = parser.parse_args()
     main(args.data_path)

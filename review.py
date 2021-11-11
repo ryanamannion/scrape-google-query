@@ -1,22 +1,59 @@
 """Use metadata file to open documents for review, and delete irrelevant docs.
-
-Valid responses:
-    * (y)es: document is relevant
-    * (n)o: document is not relevant, remove from metadata and move to trash
-    * note: add note to the document which was just opened
-    * mistake: print a reminder that the previous doc was a mistake, so you can
-        get it out of the trash or whatever. Prints the last doc's json element
-    * (q)uit: save progress and quit
 """
 import sys
 import json
 import argparse
 import subprocess
+import shutil
 from pathlib import Path
 from copy import deepcopy
 
+response_table = [
+    ("Response", "Alternative(s)", "Description & Action"),
+    ("yes", "y", "Document is relevant: set `reviewed` key to `True`"),
+    ("no", "n", "Document is not relevant: remove from metadata and move file "
+                "to trash"),
+    ("reopen", "r", "Open the current document again."),
+    ("mistake", "m", "You replied `y`/`n` when you meant the opposite: user is "
+                     "prompted for which of the last 5 docs was a mistake. That"
+                     " document is readded to the metadata as unreviewed, and "
+                     "if the file is in the trash it is restored."),
+    ("note, comment", "c", "Add a note to the current document"),
+    ("quit", "q", "Save progress and quit")
+    ]
+
+TERM_SIZE = shutil.get_terminal_size((57, 98))      # for table formatting
+print(TERM_SIZE)
 TRASH_LOCATION = Path.home()/".local/share/Trash/files"       # joinpath idiom
 DEFAULT_APP_OPENER = "xdg-open"
+
+
+def format_table(table):
+    output = ""
+    lens = {0: [], 1: []}
+    for cells in table:
+        for num in [0, 1]:
+            lens[num].append(len(cells[num]))
+    longest = {num: max(lens[num]) for num in [0, 1]}
+    for cells in table:
+        third_col_start = None
+        line = ""
+        for i, cell in enumerate(cells):
+            if i in [0, 1]:
+                line += cell+(" " * (longest[i] - len(cell)))+(" "*4)
+                third_col_start = len(line)   # will get set correctly when i==2
+            else:
+                words = cell.split(" ")
+                third_col = ""
+                for word in words:
+                    if (len(line) + len(word) + 1) <= TERM_SIZE.columns:
+                        line += " " + word
+                    else:
+                        output += line + "\n"
+                        line = " " * third_col_start
+        output += line + "\n"
+        output += "-" * TERM_SIZE.columns + "\n"
+    return output
 
 
 def open_file(filepath):
@@ -152,7 +189,16 @@ def main(data_dir):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    # hack-y way around optional arg still requiring positional arg
+    if sys.argv[1] in ['--reponses', '-r']:
+        print(format_table(response_table))
+        sys.exit()
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("data_path", type=Path, help="path to data to review")
+    parser.add_argument("--responses", "-r", action="store_true",
+                        help="display valid responses and exit")
     args = parser.parse_args()
+    if args.responses:
+        print(format_table(response_table))
+        sys.exit()
     main(args.data_path)

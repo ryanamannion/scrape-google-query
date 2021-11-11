@@ -50,18 +50,23 @@ optional arguments:
 ## `review.py`
 
 ```
-usage: review.py [-h] data_path
+usage: review.py [-h] [--responses] data_path
+
+Use metadata file to open documents for review, and delete irrelevant docs.
 
 positional arguments:
-  data_path   path to data to review
+  data_path        path to data to review
 
 optional arguments:
-  -h, --help  show this help message and exit
+  -h, --help       show this help message and exit
+  --responses, -r  display valid responses and exit
 ```
 
 ### Valid responses to prompt
 
-After each document is opened, the user will be prompted: `Is this doc relevant? >`. These are the valid responses and what they do
+After each document is opened, the user will be prompted: `Is this doc relevant? >`. These are the valid responses and what they do:
+
+Hint: run `$ python review.py -r` to see this in CLI
 
 | Response | Alternative(s) | Description & Action |
 |:---------:|:------------:|-----------------------|

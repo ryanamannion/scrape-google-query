@@ -1,4 +1,12 @@
 """Use metadata file to open documents for review, and delete irrelevant docs.
+
+Valid responses:
+    * (y)es: document is relevant
+    * (n)o: document is not relevant, remove from metadata and move to trash
+    * note: add note to the document which was just opened
+    * mistake: print a reminder that the previous doc was a mistake, so you can
+        get it out of the trash or whatever. Prints the last doc's json element
+    * (q)uit: save progress and quit
 """
 import sys
 import json
@@ -94,7 +102,7 @@ def main(data_dir):
                     this_doc['notes'] = existing_notes
                     relevant = "UNK"        # re-prompt user
                 elif relevant == "MKE":
-                    print(f"MISTAKE: {last}")
+                    print(f"MISTAKE: {json.dumps({last['save_fname']: last})}")
                     relevant = "UNK"        # re-prompt user
                 elif relevant == "QIT":
                     # save new metadata and exit, don't overwrite old metadata

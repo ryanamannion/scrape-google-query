@@ -22,6 +22,6 @@ These could also easily be modified for MacOS.
 ## Getting Started
 
 1. Clone the repo
-2. Run `$ python scrape_docs.py --help` (example: `$ python scrape_docs.py 250 data/conduct "university code of conduct"`)
+2. Run `$ python scrape.py --help` (example: `$ python scrape.py 250 data/conduct "university code of conduct"`)
 3. Wait
-4. Run `$ python review_docs.py --help` (continuing with example: `$ python review_docs.py data/conduct`)
+4. Run `$ python review.py --help` (continuing with example: `$ python review.py data/conduct`)

@@ -67,7 +67,13 @@ def trash(file_path):
 def recover(file_name, dest):
     trash_name = TRASH_LOCATION/file_name
     dest_name = Path(dest)/file_name
-    trash_name.rename(dest_name)
+    if trash_name.exists():
+        trash_name.rename(dest_name)
+    else:
+        try:
+            assert dest_name.exists()
+        except AssertionError:
+            raise FileNotFoundError(file_name)
 
 
 def main(data_dir):

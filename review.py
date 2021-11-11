@@ -51,7 +51,7 @@ def parse(input):
         return "MKE"        # mistake
     elif input.lower() in {'r', 'reopen'}:
         return "REO"
-    elif input.lower() in {'note'}:
+    elif input.lower() in {'note', 'comment', 'c'}:
         return "NTE"
     elif input.lower() in {'q', 'quit'}:
         return "QIT"

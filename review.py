@@ -49,6 +49,8 @@ def parse(input):
         return False
     elif input.lower() in {"mistake", "m"}:
         return "MKE"        # mistake
+    elif input.lower() in {'r', 'reopen'}:
+        return "REO"
     elif input.lower() in {'note'}:
         return "NTE"
     elif input.lower() in {'q', 'quit'}:
@@ -57,18 +59,25 @@ def parse(input):
         return "UNK"        # unknown
 
 
+def trash(file_path):
+    trash_name = TRASH_LOCATION/file_path.name
+    file_path.rename(trash_name)
+
+
+def recover(file_name, dest):
+    trash_name = TRASH_LOCATION/file_name
+    dest_name = Path(dest)/file_name
+    trash_name.rename(dest_name)
+
+
 def main(data_dir):
     data_dir = Path(data_dir)
-    reviewed_path = data_dir / "reviewed.txt"
-    if not reviewed_path.exists():
-        reviewed_path.touch()
-    with reviewed_path.open('r') as f:
-        reviewed = {line.strip() for line in f.readlines()}
     metadata_path = data_dir / "metadata.json"
     old_metadata_path = data_dir / "metadata_old.json"
     metadata = load_json(metadata_path)
+    reviewed = {p for p, d in metadata.items() if d['reviewed'] is True}
     editable = deepcopy(metadata)
-    last = {}
+    last = []
     try:
         for i, (file_name, doc) in enumerate(metadata.items()):
             print()
@@ -85,14 +94,12 @@ def main(data_dir):
                 if relevant is True:
                     # continue
                     print("Yes")
+                    editable[file_name]['reviewed'] = True
                 elif relevant is False:
                     print("No")
                     # move to trash
-                    trash_path = TRASH_LOCATION/file_name
                     if file_path.exists():
-                        # patch for error which caused files to be deleted but
-                        # not from the metadata
-                        file_path.rename(trash_path)
+                        trash(file_path)
                     del editable[file_name]
                 elif relevant == "NTE":
                     note = input("Enter note here > ")
@@ -102,32 +109,44 @@ def main(data_dir):
                     this_doc['notes'] = existing_notes
                     relevant = "UNK"        # re-prompt user
                 elif relevant == "MKE":
-                    print(f"MISTAKE: {json.dumps({last['save_fname']: last})}")
+                    print("Which document did you make a mistake on?")
+                    for i, prev_doc in enumerate(last):
+                        print(f"{i}: {prev_doc['save_fname']}")
+                    idx = int(input("> "))
+                    print(f"Re-adding doc {idx} as unreviewed. Returning to "
+                          f"present document.")
+                    last_doc = last[idx]
+                    last_doc['reviewed'] = False
+                    last_fname = last_doc['save_fname']
+                    editable[last_fname] = last_doc
+                    recover(last_fname, data_dir)
+                    relevant = "UNK"        # re-prompt user
+                elif relevant == "REO":
+                    open_file(file_path)
                     relevant = "UNK"        # re-prompt user
                 elif relevant == "QIT":
                     # save new metadata and exit, don't overwrite old metadata
                     metadata_path.rename(old_metadata_path)
                     save_json(editable, metadata_path)
-                    save_reviewed(list(reviewed), reviewed_path)
                     sys.exit()
                 elif relevant == "UNK":
                     # re-prompt user, unknown input
                     print("Please answer yes/no")
-            last = doc
+            if len(last) > 5:
+                last.pop(0)
+            last.append(doc)
             reviewed.add(file_name)
         # if we run out of docs, save the progress!!!
         save_json(editable, metadata_path)
-        save_reviewed(list(reviewed), reviewed_path)
     except Exception as exc:
         choice = parse(input("Exception raised. Save? "))
         if choice is True:
             save_json(editable, metadata_path)
-            save_reviewed(list(reviewed), reviewed_path)
         raise exc
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser()
     parser.add_argument("data_path", type=Path, help="path to data to review")
     args = parser.parse_args()
     main(args.data_path)

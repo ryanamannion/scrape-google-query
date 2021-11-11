@@ -1,7 +1,7 @@
-"""Scrape university codes of conduct from google search.
+"""Scrape documents from google search.
 
 Uses BeautifulSoup to scrape a list of pdf URLs from a google search looking
-for university codes of conduct.
+for documents of a certain type.
 """
 import re
 import argparse

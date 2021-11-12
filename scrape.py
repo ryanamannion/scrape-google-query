@@ -18,6 +18,7 @@ from datetime import datetime
 
 BASE_URL = "https://www.google."
 repls = {"%20": "_",
+         "2B": "+",
          "(": "",
          ")": ""
           }

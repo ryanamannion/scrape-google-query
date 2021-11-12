@@ -31,10 +31,12 @@ These could also easily be modified for MacOS.
 ## `scrape.py`
 
 ```
-usage: scrape.py [-h] [--filetype FILETYPE] [--domain DOMAIN] num_docs save_dir query
+usage: scrape.py [-h] [--filetype FILETYPE] [--domain DOMAIN]
+                 num_docs save_dir query
 
-Scrape university codes of conduct from google search. Uses BeautifulSoup to scrape a list of pdf URLs from 
-a google search looking for university codes of conduct.
+Scrape university codes of conduct from google search. Uses BeautifulSoup to
+scrape a list of pdf URLs from a google search looking for university codes of
+conduct.
 
 positional arguments:
   num_docs              maximum number of docs to download
@@ -44,10 +46,10 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   --filetype FILETYPE, -f FILETYPE
-                        file extension to look for. Do not include period. e.g. 'pdf'
+                        file extension to look for. Do not include period.
+                        e.g. 'pdf'
   --domain DOMAIN, -d DOMAIN
                         Google domain to use. Defaults to .com
-
 ```
 
 ## `review.py`

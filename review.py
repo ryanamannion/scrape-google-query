@@ -22,7 +22,7 @@ response_table = [
     ("quit", "q", "Save progress and quit")
     ]
 
-TERM_SIZE = shutil.get_terminal_size((57, 98))      # for table formatting
+TERM_SIZE = shutil.get_terminal_size((80, 20))      # for table formatting
 TRASH_LOCATION = Path.home()/".local/share/Trash/files"       # joinpath idiom
 DEFAULT_APP_OPENER = "xdg-open"
 
@@ -43,7 +43,6 @@ def format_table(table):
                 third_col_start = len(line)   # will get set correctly when i==2
             else:
                 words = cell.split(" ")
-                third_col = ""
                 for word in words:
                     if (len(line) + len(word) + 1) <= TERM_SIZE.columns:
                         line += " " + word
